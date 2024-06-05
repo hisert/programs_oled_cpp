@@ -25,7 +25,8 @@ void PRINT_WAR()
 int main()
 {  
  INIT_oled();
-  oled.Write_Text(0,0,"hello");  
-  oled.Update();
+  PRINT_WAR();
+//  oled.Write_Text(0,0,"hello");  
+//  oled.Update();
  // while(1)  this_thread::sleep_for(chrono::milliseconds(100));
 }
