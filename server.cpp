@@ -11,10 +11,11 @@
 
 class TCPServer {
 public:
-    TCPServer(int port, std::function<void(const char*)> messageHandler);
+    TCPServer(int port, std::function<void(const char*)> messageHandler, std::function<void()> onDisconnect);
     ~TCPServer();
     int acceptConnection();
     void handleClient(int clientSocket);
+    void checkDisconnect();
 
 private:
     int server_fd;
@@ -22,11 +23,14 @@ private:
     int port;
     char ip[INET_ADDRSTRLEN];
     std::function<void(const char*)> messageHandler;
+    std::function<void()> onDisconnect;
+    int connectedClients;
 
     int getLocalIP();
 };
 
-TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler) : port(port), messageHandler(messageHandler) {
+TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, std::function<void()> onDisconnect) 
+    : port(port), messageHandler(messageHandler), onDisconnect(onDisconnect), connectedClients(0) {
     if (getLocalIP() != 0) {
         std::cerr << "Error getting local IP address" << std::endl;
         exit(EXIT_FAILURE);
@@ -104,6 +108,7 @@ int TCPServer::acceptConnection() {
 }
 
 void TCPServer::handleClient(int clientSocket) {
+    ++connectedClients;
     char buffer[1024] = {0};
     while (true) {
         int valread = read(clientSocket, buffer, 1024);
@@ -118,15 +123,28 @@ void TCPServer::handleClient(int clientSocket) {
         // Handle message using external function
         messageHandler(buffer);
     }
+    --connectedClients;
+    checkDisconnect();
+}
+
+void TCPServer::checkDisconnect() {
+    if (connectedClients == 0) {
+        onDisconnect();
+    }
 }
 
 void handleMessage(const char* message) {
     std::cout << "External function handling message: " << message << std::endl;
 }
 
+void handleDisconnect() {
+    std::cout << "All clients disconnected" << std::endl;
+    // Additional actions to take when all clients disconnect
+}
+
 int main() {
-    int port = 8081;  // Desired port number
-    TCPServer server(port, handleMessage);
+    int port = 8080;  // Desired port number
+    TCPServer server(port, handleMessage, handleDisconnect);
 
     while (true) {
         int client_socket = server.acceptConnection();
