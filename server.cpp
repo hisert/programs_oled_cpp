@@ -143,7 +143,7 @@ void handleDisconnect() {
 }
 
 int main() {
-    int port = 8081;  // Desired port number
+    int port = 8082;  // Desired port number
     TCPServer server(port, handleMessage, handleDisconnect);
 
     while (true) {
