@@ -153,6 +153,7 @@ void handleMessage(const char* message) {
           std::cout << strMessage << std::endl;
     }
     else std::cout << strMessage << std::endl;
+    strMessage = "";
 
 }
 
