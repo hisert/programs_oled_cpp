@@ -5,6 +5,8 @@
 #include <netdb.h>
 #include <ifaddrs.h>
 #include <cstdlib>
+#include <thread>
+#include <vector>
 
 class TCPServer {
 public:
@@ -104,19 +106,28 @@ void TCPServer::handleClient(int clientSocket) {
     read(clientSocket, buffer, 1024);
     std::cout << "Message from client: " << buffer << std::endl;
     send(clientSocket, "Hello from server", strlen("Hello from server"), 0);
+    close(clientSocket);
 }
 
 int main() {
     int port = 8080;  // Desired port number
     TCPServer server(port);
 
+    std::vector<std::thread> threads;
+
     while (true) {
         int client_socket = server.acceptConnection();
         std::cout << "Connection accepted" << std::endl;
 
-        // Handle client communication
-        server.handleClient(client_socket);
-        close(client_socket);
+        // Handle client communication in a new thread
+        threads.emplace_back([&server, client_socket]() {
+            server.handleClient(client_socket);
+        });
+    }
+
+    // Join all threads
+    for (auto& thread : threads) {
+        thread.join();
     }
 
     return 0;
