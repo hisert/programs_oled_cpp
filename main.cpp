@@ -4,7 +4,7 @@
 #include <chrono>
 #include "oled.cpp"
 #include "war.h"
-#include "server.cpp
+#include "server.cpp"
 using namespace std;
 OLED oled;
 
