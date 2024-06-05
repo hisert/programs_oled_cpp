@@ -125,6 +125,7 @@ void TCPServer::handleClient(int clientSocket) {
             exit(EXIT_FAILURE);
         }
         messageHandler(buffer);
+        for(byte x=0;x<1024;x++) buffer[x] = 0;
     }
     --connectedClients;
     checkDisconnect();
