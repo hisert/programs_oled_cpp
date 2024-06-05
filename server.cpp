@@ -128,13 +128,26 @@ void TCPServer::checkDisconnect() {
         onDisconnect();
     }
 }
+int findOrder(std::string& mainString, const std::string& searchString) {
+    size_t found = mainString.find(searchString);
+    if (found != std::string::npos) {
+        std::cout << "Aranan string bulundu." << std::endl;
+        size_t searchStringLength = searchString.length();
+        mainString.erase(found, searchStringLength);
+        std::string remainingString = mainString.substr(found);
+        mainString += remainingString;
+        return 1;
+    } 
+    return 0;
+}
 
 void handleMessage(const char* message) {
     std::string strMessage = std::string(message);
-    size_t found = strMessage.find("(TEXT)");   
-    if (found != std::string::npos) {
-        std::cout << "Verilen string içinde '$TEXT$' bulundu." << std::endl;
-    } 
+    if(findOrder(strMessage,"(TEXT)"))
+    {
+          std::cout << strMessage << std::endl;
+    }
+    else std::cout << strMessage << std::endl;
 
 }
 
