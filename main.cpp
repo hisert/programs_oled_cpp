@@ -15,10 +15,10 @@ void INIT_oled()
 void PRINT_WAR()
 {
     oled.InvertFont(1);
-    for(unsigned char x=0;x<warallArray_LEN ;x++)
+    for(unsigned char x=0;x<warLen ;x++)
     {
     oled.ClearDisplay();
-    oled.Image(warallArray[x]);
+    oled.Image(warAll[x]);
     oled.Update();   
     this_thread::sleep_for(chrono::milliseconds(10)); 	    
     }
