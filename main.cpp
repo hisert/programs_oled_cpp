@@ -14,7 +14,7 @@ void INIT_oled()
 int main()
 {  
  INIT_oled();
-  oled.Write_Text((0 + 4 +50),(16 + 4),"hello");  
+  //oled.Write_Text(0,0,"hello");  
   oled.Update();
  // while(1)  this_thread::sleep_for(chrono::milliseconds(100));
 }
