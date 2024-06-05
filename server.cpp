@@ -7,10 +7,11 @@
 #include <cstdlib>
 #include <thread>
 #include <vector>
+#include <functional>
 
 class TCPServer {
 public:
-    TCPServer(int port);
+    TCPServer(int port, std::function<void(const char*)> messageHandler);
     ~TCPServer();
     int acceptConnection();
     void handleClient(int clientSocket);
@@ -20,11 +21,12 @@ private:
     struct sockaddr_in address;
     int port;
     char ip[INET_ADDRSTRLEN];
+    std::function<void(const char*)> messageHandler;
 
     int getLocalIP();
 };
 
-TCPServer::TCPServer(int port) : port(port) {
+TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler) : port(port), messageHandler(messageHandler) {
     if (getLocalIP() != 0) {
         std::cerr << "Error getting local IP address" << std::endl;
         exit(EXIT_FAILURE);
@@ -113,29 +115,27 @@ void TCPServer::handleClient(int clientSocket) {
             exit(EXIT_FAILURE);
         }
         std::cout << "Message from client: " << buffer << std::endl;
-        send(clientSocket, "Hello from server", strlen("Hello from server"), 0);
+        // Handle message using external function
+        messageHandler(buffer);
     }
+}
+
+void handleMessage(const char* message) {
+    std::cout << "External function handling message: " << message << std::endl;
 }
 
 int main() {
     int port = 8080;  // Desired port number
-    TCPServer server(port);
-
-    std::vector<std::thread> threads;
+    TCPServer server(port, handleMessage);
 
     while (true) {
         int client_socket = server.acceptConnection();
         std::cout << "Connection accepted" << std::endl;
 
         // Handle client communication in a new thread
-        threads.emplace_back([&server, client_socket]() {
+        std::thread([&server, client_socket]() {
             server.handleClient(client_socket);
-        });
-    }
-
-    // Join all threads
-    for (auto& thread : threads) {
-        thread.join();
+        }).detach(); // Detach the thread to allow it to run independently
     }
 
     return 0;
