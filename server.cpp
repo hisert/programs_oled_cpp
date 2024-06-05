@@ -169,4 +169,9 @@ int main() {
 
     while (true) {
         int client_socket = server.acceptConnection();
-        std::thread([&server
+        std::thread([&server, client_socket]() {
+            server.handleClient(client_socket);
+        }).detach(); // Detach the thread to allow it to run independently
+    }
+    return 0;
+}
