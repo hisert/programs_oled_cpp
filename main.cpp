@@ -17,8 +17,8 @@ void PRINT_WAR()
     for(unsigned char x=0;x<53;x++)
     {
     ClearDisplay();
-    Image(warAll[x]);
-    Update();   
+    oled.Image(warAll[x]);
+    oled.Update();   
     this_thread::sleep_for(chrono::milliseconds(10)); 	    
     }
 }
