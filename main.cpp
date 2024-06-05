@@ -3,6 +3,7 @@
 #include <thread>
 #include <chrono>
 #include "oled.cpp"
+#include "war.h"
 using namespace std;
 OLED oled;
 
@@ -11,6 +12,16 @@ void INIT_oled()
   oled.INIT(128,32,0x3C);
 }
 
+void PRINT_WAR()
+{
+    for(unsigned char x=0;x<53;x++)
+    {
+    ClearDisplay();
+    Image(warAll[x]);
+    Update();   
+    this_thread::sleep_for(chrono::milliseconds(10)); 	    
+    }
+}
 int main()
 {  
  INIT_oled();
