@@ -103,10 +103,18 @@ int TCPServer::acceptConnection() {
 
 void TCPServer::handleClient(int clientSocket) {
     char buffer[1024] = {0};
-    read(clientSocket, buffer, 1024);
-    std::cout << "Message from client: " << buffer << std::endl;
-    send(clientSocket, "Hello from server", strlen("Hello from server"), 0);
-    close(clientSocket);
+    while (true) {
+        int valread = read(clientSocket, buffer, 1024);
+        if (valread == 0) {
+            std::cout << "Client disconnected" << std::endl;
+            break;
+        } else if (valread < 0) {
+            perror("read");
+            exit(EXIT_FAILURE);
+        }
+        std::cout << "Message from client: " << buffer << std::endl;
+        send(clientSocket, "Hello from server", strlen("Hello from server"), 0);
+    }
 }
 
 int main() {
