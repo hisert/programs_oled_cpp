@@ -9,6 +9,7 @@
 #include <vector>
 #include <functional>
 #include <string>
+
 class TCPServer {
 public:
     TCPServer(int port, std::function<void(const char*)> messageHandler, std::function<void()> onDisconnect);
@@ -16,6 +17,8 @@ public:
     int acceptConnection();
     void handleClient(int clientSocket);
     void checkDisconnect();
+    void run();
+
 private:
     int server_fd;
     struct sockaddr_in address;
@@ -25,7 +28,9 @@ private:
     std::function<void()> onDisconnect;
     int connectedClients;
     int getLocalIP();
+    std::thread serverThread;
 };
+
 TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, std::function<void()> onDisconnect) 
     : port(port), messageHandler(messageHandler), onDisconnect(onDisconnect), connectedClients(0) {
     if (getLocalIP() != 0) {
@@ -55,10 +60,26 @@ TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, 
         exit(EXIT_FAILURE);
     }
     std::cout << "Oled Server listening on IP: " << ip << ", Port: " << port << std::endl;
+
+    // Thread'i başlat
+    serverThread = std::thread(&TCPServer::run, this);
 }
+
 TCPServer::~TCPServer() {
     close(server_fd);
+    // Thread'i sonlandır
+    serverThread.join();
 }
+
+void TCPServer::run() {
+    while (true) {
+        int client_socket = acceptConnection();
+        std::thread([&client_socket, this]() {
+            handleClient(client_socket);
+        }).detach();
+    }
+}
+
 int TCPServer::getLocalIP() {
     struct ifaddrs *ifaddr, *ifa;
     int family, s;
@@ -85,6 +106,7 @@ int TCPServer::getLocalIP() {
     freeifaddrs(ifaddr);
     return -1;
 }
+
 int TCPServer::acceptConnection() {
     int addrlen = sizeof(address);
     int new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
@@ -94,6 +116,7 @@ int TCPServer::acceptConnection() {
     }
     return new_socket;
 }
+
 void TCPServer::handleClient(int clientSocket) {
     ++connectedClients;
     char buffer[1024] = {0};
@@ -111,6 +134,7 @@ void TCPServer::handleClient(int clientSocket) {
     --connectedClients;
     checkDisconnect();
 }
+
 void TCPServer::checkDisconnect() {
     if (connectedClients == 0) {
         onDisconnect();
@@ -129,12 +153,10 @@ int findOrder(std::string& mainString, const std::string& searchString) {
 
 void handleMessage(const char* message) {
     std::string strMessage = std::string(message);
-    if(findOrder(strMessage,"(TEXT1)")) oled.Write_Text(0,0),strMessage);
-    else if(findOrder(strMessage,"(TEXT2)")) oled.Write_Text(8,0),strMessage);
-    else if(findOrder(strMessage,"(TEXT3)")) oled.Write_Text(16,0),strMessage);
+    if(findOrder(strMessage,"(TEXT1)")) std::cout << "TEXT1: " << strMessage << std::endl;
+    else if(findOrder(strMessage,"(TEXT2)")) std::cout << "TEXT2: " << strMessage << std::endl;
+    else if(findOrder(strMessage,"(TEXT3)")) std::cout << "TEXT3: " << strMessage << std::endl;
     else std::cout << strMessage << std::endl;
-    strMessage = "";
-
 }
 
 void handleDisconnect() {
@@ -146,10 +168,7 @@ int main() {
     TCPServer server(port, handleMessage, handleDisconnect);
 
     while (true) {
-        int client_socket = server.acceptConnection();
-        std::thread([&server, client_socket]() {
-            server.handleClient(client_socket);
-        }).detach(); // Detach the thread to allow it to run independently
+        sleep(1);
     }
     return 0;
 }
