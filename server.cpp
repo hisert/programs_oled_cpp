@@ -140,9 +140,7 @@ int findOrder(std::string& mainString, const std::string& searchString) {
     size_t found = mainString.find(searchString);
     if (found != std::string::npos) {
         size_t searchStringLength = searchString.length();
-        mainString.erase(found, searchStringLength);
-        std::string remainingString = mainString.substr(found);
-        mainString += remainingString;
+        mainString = mainString.substr(0, found) + mainString.substr(found + searchStringLength);
         return 1;
     } 
     return 0;
