@@ -339,6 +339,8 @@ void INIT(unsigned char width,unsigned char weight,unsigned char adress)
     ssd1306_command(SSD1306_NORMAL_DISPLAY) ;
     ssd1306_command(SSD1306_DEACTIVATE_SCROLL) ;
     ssd1306_command(SSD1306_DISPLAY_ON) ;
+	ssd1306_command(0xC0) ;
+	ssd1306_command(0xA0) ;
 
     SetFont(TINY_FONTS) ;
     ClearDisplay() ;
