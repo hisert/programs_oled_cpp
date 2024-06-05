@@ -4,6 +4,7 @@
 #include <chrono>
 #include "oled.cpp"
 #include "war.h"
+#include "server.cpp
 using namespace std;
 OLED oled;
 
@@ -24,11 +25,35 @@ void PRINT_WAR()
     }
     oled.InvertFont(0);
 }
-int main()
-{  
- INIT_oled();
-  PRINT_WAR();
-//  oled.Write_Text(0,0,"hello");  
-//  oled.Update();
- // while(1)  this_thread::sleep_for(chrono::milliseconds(100));
+
+int findOrder(std::string& mainString, const std::string& searchString) {
+    size_t found = mainString.find(searchString);
+    if (found != std::string::npos) {
+        size_t searchStringLength = searchString.length();
+        mainString = mainString.substr(0, found) + mainString.substr(found + searchStringLength);
+        return 1;
+    } 
+    return 0;
 }
+
+void handleMessage(const char* message) {
+    std::string strMessage = std::string(message);
+    if(findOrder(strMessage,"(TEXT1)")) std::cout << "TEXT1: " << strMessage << std::endl;
+    else if(findOrder(strMessage,"(TEXT2)")) std::cout << "TEXT2: " << strMessage << std::endl;
+    else if(findOrder(strMessage,"(TEXT3)")) std::cout << "TEXT3: " << strMessage << std::endl;
+    else std::cout << strMessage << std::endl;
+}
+
+void handleDisconnect() {
+    std::cout << "All clients disconnected" << std::endl;
+}
+
+int main() {
+   INIT_oled();
+  PRINT_WAR();
+    TCPServer server(8082, handleMessage, handleDisconnect);
+    while (true) sleep(1);  
+    return 0;
+}
+
+
