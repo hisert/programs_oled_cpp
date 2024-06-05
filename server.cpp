@@ -131,7 +131,7 @@ void TCPServer::checkDisconnect() {
 
 void handleMessage(const char* message) {
     size_t found = data.find("$TEXT$");
-    if (found != std::string::npos)) {
+    if (found != std::string::npos) {
         std::cout << "Verilen string içinde '$TEXT$' bulundu." << std::endl;
     } 
 
