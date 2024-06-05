@@ -43,6 +43,13 @@ TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, 
         exit(EXIT_FAILURE);
     }
 
+    // SO_REUSEADDR seçeneği ayarlanıyor
+    int opt = 1;
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr(ip);
     address.sin_port = htons(port);
@@ -128,6 +135,7 @@ void TCPServer::checkDisconnect() {
         onDisconnect();
     }
 }
+
 int findOrder(std::string& mainString, const std::string& searchString) {
     size_t found = mainString.find(searchString);
     if (found != std::string::npos) {
@@ -161,9 +169,4 @@ int main() {
 
     while (true) {
         int client_socket = server.acceptConnection();
-        std::thread([&server, client_socket]() {
-            server.handleClient(client_socket);
-        }).detach(); // Detach the thread to allow it to run independently
-    }
-    return 0;
-}
+        std::thread([&server
