@@ -141,34 +141,3 @@ void TCPServer::checkDisconnect() {
     }
 }
 
-int findOrder(std::string& mainString, const std::string& searchString) {
-    size_t found = mainString.find(searchString);
-    if (found != std::string::npos) {
-        size_t searchStringLength = searchString.length();
-        mainString = mainString.substr(0, found) + mainString.substr(found + searchStringLength);
-        return 1;
-    } 
-    return 0;
-}
-
-void handleMessage(const char* message) {
-    std::string strMessage = std::string(message);
-    if(findOrder(strMessage,"(TEXT1)")) std::cout << "TEXT1: " << strMessage << std::endl;
-    else if(findOrder(strMessage,"(TEXT2)")) std::cout << "TEXT2: " << strMessage << std::endl;
-    else if(findOrder(strMessage,"(TEXT3)")) std::cout << "TEXT3: " << strMessage << std::endl;
-    else std::cout << strMessage << std::endl;
-}
-
-void handleDisconnect() {
-    std::cout << "All clients disconnected" << std::endl;
-}
-
-int main() {
-    int port = 8082;  // Desired port number
-    TCPServer server(port, handleMessage, handleDisconnect);
-
-    while (true) {
-        sleep(1);
-    }
-    return 0;
-}
