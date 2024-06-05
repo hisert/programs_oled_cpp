@@ -38,9 +38,10 @@ int findOrder(std::string& mainString, const std::string& searchString) {
 
 void handleMessage(const char* message) {
     std::string strMessage = std::string(message);
-    if(findOrder(strMessage,"(TEXT1)")) std::cout << "TEXT1: " << strMessage << std::endl;
-    else if(findOrder(strMessage,"(TEXT2)")) std::cout << "TEXT2: " << strMessage << std::endl;
-    else if(findOrder(strMessage,"(TEXT3)")) std::cout << "TEXT3: " << strMessage << std::endl;
+    if(findOrder(strMessage,"(TEXT1)")) oled.Write_Text(0,0,strMessage);
+    else if(findOrder(strMessage,"(TEXT2)")) oled.Write_Text(8,0,strMessage);
+    else if(findOrder(strMessage,"(TEXT3)")) oled.Write_Text(16,0,strMessage);
+    else if(findOrder(strMessage,"(WAR)")) PRINT_WAR();        
     else std::cout << strMessage << std::endl;
 }
 
@@ -50,7 +51,6 @@ void handleDisconnect() {
 
 int main() {
    INIT_oled();
-  PRINT_WAR();
     TCPServer server(8082, handleMessage, handleDisconnect);
     while (true) sleep(1);  
     return 0;
