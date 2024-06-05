@@ -1856,7 +1856,7 @@ const unsigned char war052 []  = {
 
 // Array of all bitmaps for convenience. (Total bytes used to store images in PROGMEM = 27984)
 const int war_LEN = 53;
-const unsigned char* war[53] = {
+const unsigned char* warAll[53] = {
 	war000,
 	war001,
 	war002,
