@@ -8,6 +8,7 @@
 #include <thread>
 #include <vector>
 #include <functional>
+#include <string>
 
 class TCPServer {
 public:
@@ -129,7 +130,11 @@ void TCPServer::checkDisconnect() {
 }
 
 void handleMessage(const char* message) {
-    std::cout << "External function handling message: " << message << std::endl;
+    size_t found = data.find("$TEXT$");
+    if (found != std::string::npos)) {
+        std::cout << "Verilen string içinde '$TEXT$' bulundu." << std::endl;
+    } 
+
 }
 
 void handleDisconnect() {
