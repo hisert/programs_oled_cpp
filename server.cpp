@@ -56,7 +56,7 @@ TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, 
         exit(EXIT_FAILURE);
     }
 
-    std::cout << "Server listening on IP: " << ip << ", Port: " << port << std::endl;
+    std::cout << "Oled Server listening on IP: " << ip << ", Port: " << port << std::endl;
 }
 
 TCPServer::~TCPServer() {
@@ -84,8 +84,6 @@ int TCPServer::getLocalIP() {
                 std::cerr << "getnameinfo() failed: " << gai_strerror(s) << std::endl;
                 return -1;
             }
-
-            // We only take the first non-loopback address
             if (strcmp(ifa->ifa_name, "lo") != 0) {
                 freeifaddrs(ifaddr);
                 return 0;
@@ -113,14 +111,11 @@ void TCPServer::handleClient(int clientSocket) {
     while (true) {
         int valread = read(clientSocket, buffer, 1024);
         if (valread == 0) {
-            std::cout << "Client disconnected" << std::endl;
             break;
         } else if (valread < 0) {
             perror("read");
             exit(EXIT_FAILURE);
         }
-        std::cout << "Message from client: " << buffer << std::endl;
-        // Handle message using external function
         messageHandler(buffer);
     }
     --connectedClients;
@@ -139,7 +134,6 @@ void handleMessage(const char* message) {
 
 void handleDisconnect() {
     std::cout << "All clients disconnected" << std::endl;
-    // Additional actions to take when all clients disconnect
 }
 
 int main() {
@@ -148,13 +142,9 @@ int main() {
 
     while (true) {
         int client_socket = server.acceptConnection();
-        std::cout << "Connection accepted" << std::endl;
-
-        // Handle client communication in a new thread
         std::thread([&server, client_socket]() {
             server.handleClient(client_socket);
         }).detach(); // Detach the thread to allow it to run independently
     }
-
     return 0;
 }
