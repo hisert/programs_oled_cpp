@@ -139,7 +139,6 @@ void TCPServer::checkDisconnect() {
 int findOrder(std::string& mainString, const std::string& searchString) {
     size_t found = mainString.find(searchString);
     if (found != std::string::npos) {
-        std::cout << "Aranan string bulundu." << std::endl;
         size_t searchStringLength = searchString.length();
         mainString.erase(found, searchStringLength);
         std::string remainingString = mainString.substr(found);
