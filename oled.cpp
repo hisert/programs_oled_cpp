@@ -6,8 +6,6 @@
 #include <chrono>
 #include <thread>
 #include "I2CDevice.cpp"
-#include "oled_by.h"
-#include "oled_atom.h"
 
 using namespace std;
 
@@ -362,30 +360,6 @@ void InvertFont(unsigned char invert_status)
     else cfont.inverted = 0 ;
 }
 
-void PrintAtom(void) 
-{
-    InvertFont(1);
-    for(unsigned char x=0;x<143;x++)
-    {
-    ClearDisplay();
-    Image(atomallArray[x]);
-    Update();   
-    this_thread::sleep_for(chrono::milliseconds(1)); 	    
-    }
-    InvertFont(0);
-}
-void PrintBy(void) 
-{ 
-    InvertFont(0);
-    for(unsigned char x=0;x<53;x++)
-    {
-    ClearDisplay();
-    Image(epd_bitmap_allArray[x]);
-    Update();   
-    this_thread::sleep_for(chrono::milliseconds(10)); 	    
-    } 
-    InvertFont(1);
-}
 void Update(void)
 {
     unsigned int i = 0 ;
