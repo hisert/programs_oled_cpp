@@ -14,6 +14,7 @@ void INIT_oled()
 
 void PRINT_WAR()
 {
+    InvertFont(0);
     for(unsigned char x=0;x<warallArray_LEN ;x++)
     {
     oled.ClearDisplay();
@@ -21,6 +22,7 @@ void PRINT_WAR()
     oled.Update();   
     this_thread::sleep_for(chrono::milliseconds(10)); 	    
     }
+    InvertFont(1);
 }
 int main()
 {  
