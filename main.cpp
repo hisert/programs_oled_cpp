@@ -7,7 +7,9 @@
 #include "server.cpp"
 using namespace std;
 OLED oled;
-
+int animasyon_start_flag = 0;
+int animasyon_counter = 0;
+int aniasyon_choose = 0;
 void INIT_oled()
 {
   oled.INIT(128,32,0x3C);
@@ -16,14 +18,16 @@ void INIT_oled()
 void PRINT_WAR()
 {
     oled.InvertFont(1);
-    for(unsigned char x=0;x<warLen ;x++)
+    if(animasyon_counter < warLen) 
     {
     oled.ClearDisplay();
-    oled.Image(warAll[x]);
+    oled.Image(warAll[animasyon_counter]);
     oled.Update();   
-    this_thread::sleep_for(chrono::milliseconds(10)); 	    
+    animasyon_counter++; 
     }
+    else animasyon_counter = 0;
     oled.InvertFont(0);
+    this_thread::sleep_for(chrono::milliseconds(10)); 	
 }
 
 int findOrder(std::string& mainString, const std::string& searchString) {
@@ -38,6 +42,7 @@ int findOrder(std::string& mainString, const std::string& searchString) {
 
 void handleMessage(const char* message) {
     std::string strMessage = std::string(message);
+    animasyon_start_flag = 0;
     if(findOrder(strMessage,"(TEXT0)")) oled.ClearDisplay();
     else if(findOrder(strMessage,"(TEXT1)")) 
     {
@@ -54,7 +59,13 @@ void handleMessage(const char* message) {
       oled.Write_Text(0,16,"                ");  
       oled.Write_Text(0,16,strMessage);
     }
-    else if(findOrder(strMessage,"(WAR)")) PRINT_WAR();        
+    else if(findOrder(strMessage,"(ANIME)")) 
+    {
+      animasyon_start_flag = 1;
+      animasyon_counter = 0;
+      if(findOrder(strMessage,"(WAR)"))  aniasyon_choose = 0;
+     
+    }  
     oled.Update();
 }
 
@@ -65,7 +76,15 @@ void handleDisconnect() {
 int main() {
    INIT_oled();
     TCPServer server(8082, handleMessage, handleDisconnect);
-    while (true) sleep(1);  
+    while (true) 
+    {
+      if(animasyon_start_flag) 
+      {
+        if(aniasyon_choose == 0) PRINT_WAR();
+        
+      }
+      else sleep(1);
+    }
     return 0;
 }
 
