@@ -169,7 +169,7 @@ int main() {
       if(animasyon_start_flag) 
       {
         if(animasyon == 0) PRINT_WAR();
-        else if(animasyon == 0) PRINT_INFO();
+        else if(animasyon == 1) PRINT_INFO();
       }
       else sleep(1);
     }
