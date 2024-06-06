@@ -43,6 +43,7 @@ void handleMessage(const char* message) {
     else if(findOrder(strMessage,"(TEXT3)")) oled.Write_Text(16,0,strMessage);
     else if(findOrder(strMessage,"(WAR)")) PRINT_WAR();        
     else std::cout << strMessage << std::endl;
+    oled.Update();
 }
 
 void handleDisconnect() {
