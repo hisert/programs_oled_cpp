@@ -21,7 +21,7 @@ int animasyon_counter = 0;
 int animasyon = 0;
 
 //----------------------------------------------------------------------------------------------------------------------------------------FUNCTS
-/*
+
 string getSystemIPAddress() {
     struct ifaddrs* ifAddrStruct = nullptr;
     struct ifaddrs* ifa = nullptr;
@@ -96,7 +96,7 @@ void PRINT_INFO()
     oled.Update(); 
     this_thread::sleep_for(chrono::milliseconds(100)); 	
 }
-*/
+
 //----------------------------------------------------------------------------------------------------------------------------------------  
 void PRINT_WAR()
 {
@@ -168,8 +168,8 @@ int main() {
     {
       if(animasyon_start_flag) 
       {
-     //   if(animasyon == 0) PRINT_WAR();
-     //   else if(animasyon == 0) PRINT_INFO();
+        if(animasyon == 0) PRINT_WAR();
+        else if(animasyon == 0) PRINT_INFO();
       }
       else sleep(1);
     }
