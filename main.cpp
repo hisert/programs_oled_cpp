@@ -16,7 +16,7 @@
 using namespace std;
 
 //----------------------------------------------------------------------------------------------------------------------------------------FUNCTS
-/*
+
 string getSystemIPAddress() {
     struct ifaddrs* ifAddrStruct = nullptr;
     struct ifaddrs* ifa = nullptr;
@@ -91,7 +91,7 @@ void PRINT_INFO()
     oled.Update(); 
     this_thread::sleep_for(chrono::milliseconds(100)); 	
 }
-*/
+
 //----------------------------------------------------------------------------------------------------------------------------------------  
 
 OLED oled;
@@ -152,7 +152,7 @@ void handleMessage(const char* message) {
     {
       animasyon_start_flag = 1;
       animasyon_counter = 0;
-      if(findOrder(strMessage,"(WAR)"))  animasyon = "WAR";   
+   //   if(findOrder(strMessage,"(WAR)"))  animasyon = "WAR";   
   //    else if(findOrder(strMessage,"(INFO)"))  animasyon = "INFO";   
     }  
     oled.Update();
@@ -169,7 +169,7 @@ int main() {
     {
       if(animasyon_start_flag) 
       {
-        if(animasyon == "WAR") PRINT_WAR();
+     //   if(animasyon == "WAR") PRINT_WAR();
      //   else if(animasyon == "INFO") PRINT_INFO();
       }
       else sleep(1);
