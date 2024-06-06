@@ -15,6 +15,11 @@
 #include "server.cpp"
 using namespace std;
 
+OLED oled;
+int animasyon_start_flag = 0;
+int animasyon_counter = 0;
+string animasyon = 0;
+
 //----------------------------------------------------------------------------------------------------------------------------------------FUNCTS
 
 string getSystemIPAddress() {
@@ -93,12 +98,6 @@ void PRINT_INFO()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------  
-
-OLED oled;
-int animasyon_start_flag = 0;
-int animasyon_counter = 0;
-string animasyon = 0;
-
 void PRINT_WAR()
 {
     oled.InvertFont(1);
