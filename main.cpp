@@ -18,7 +18,7 @@ using namespace std;
 OLED oled;
 int animasyon_start_flag = 0;
 int animasyon_counter = 0;
-string animasyon = 0;
+int animasyon = 0;
 
 //----------------------------------------------------------------------------------------------------------------------------------------FUNCTS
 /*
@@ -151,8 +151,8 @@ void handleMessage(const char* message) {
     {
       animasyon_start_flag = 1;
       animasyon_counter = 0;
-   //   if(findOrder(strMessage,"(WAR)"))  animasyon = "WAR";   
-  //    else if(findOrder(strMessage,"(INFO)"))  animasyon = "INFO";   
+      if(findOrder(strMessage,"(WAR)"))  animasyon = 0;   
+      else if(findOrder(strMessage,"(INFO)"))  animasyon = 1;   
     }  
     oled.Update();
 }
@@ -168,8 +168,8 @@ int main() {
     {
       if(animasyon_start_flag) 
       {
-     //   if(animasyon == "WAR") PRINT_WAR();
-     //   else if(animasyon == "INFO") PRINT_INFO();
+     //   if(animasyon == 0) PRINT_WAR();
+     //   else if(animasyon == 0) PRINT_INFO();
       }
       else sleep(1);
     }
