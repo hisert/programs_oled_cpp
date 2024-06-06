@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 rm -r programs_oled_cpp
