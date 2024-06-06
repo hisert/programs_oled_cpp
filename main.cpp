@@ -38,9 +38,10 @@ int findOrder(std::string& mainString, const std::string& searchString) {
 
 void handleMessage(const char* message) {
     std::string strMessage = std::string(message);
-    if(findOrder(strMessage,"(TEXT1)")) oled.Write_Text(0,0,strMessage);
-    else if(findOrder(strMessage,"(TEXT2)")) oled.Write_Text(8,0,strMessage);
-    else if(findOrder(strMessage,"(TEXT3)")) oled.Write_Text(16,0,strMessage);
+    if(findOrder(strMessage,"(TEXT0)")) oled.ClearDisplay();
+    else if(findOrder(strMessage,"(TEXT1)")) oled.Write_Text(0,0,strMessage);
+    else if(findOrder(strMessage,"(TEXT2)")) oled.Write_Text(0,8,strMessage);
+    else if(findOrder(strMessage,"(TEXT3)")) oled.Write_Text(0,16,strMessage);
     else if(findOrder(strMessage,"(WAR)")) PRINT_WAR();        
     else std::cout << strMessage << std::endl;
     oled.Update();
