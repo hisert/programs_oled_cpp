@@ -158,11 +158,12 @@ void handleMessage(const char* message) {
 }
 
 void handleDisconnect() {
-    std::cout << "All clients disconnected" << std::endl;
+    handleMessage("(ANIME)(INFO)");
 }
 
 int main() {
     oled.INIT(128,32,0x3C);
+    handleMessage("(ANIME)(INFO)");
     TCPServer server(8082, handleMessage, handleDisconnect);
     while (true) 
     {
