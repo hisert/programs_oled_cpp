@@ -11,4 +11,4 @@ g++ -o oled main.cpp
 //---------------------------------------------------------------------------//
 
 
-sudo sed -i '$e echo "python3 /root/programs_oled/oled &"' /etc/rc.local
+sudo sed -i '$e echo "/root/programs_oled_cpp/oled &"' /etc/rc.local
