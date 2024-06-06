@@ -45,7 +45,6 @@ void handleMessage(const char* message) {
     if(animasyon_start_flag == 1) 
     {
       animasyon_start_flag = 0;
-      sleep(0.1);
       oled.ClearDisplay();
     }
     animasyon_start_flag = 0;
