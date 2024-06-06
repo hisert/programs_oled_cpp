@@ -16,7 +16,7 @@
 using namespace std;
 
 //----------------------------------------------------------------------------------------------------------------------------------------FUNCTS
-
+/*
 string getSystemIPAddress() {
     struct ifaddrs* ifAddrStruct = nullptr;
     struct ifaddrs* ifa = nullptr;
@@ -82,6 +82,16 @@ string getElapsedTimeInSeconds()
     return to_string(elapsedTime);
 }
 
+void PRINT_INFO()
+{
+    oled.ClearDisplay();
+    oled.Write_Text((0 + 15),(0 + 4),getSystemIPAddress());
+    oled.Write_Text((0 + 4),(16 + 4),"TEMP->");
+    oled.Write_Text((0 + 4 +50),(16 + 4),getCPUtemperature());   
+    oled.Update(); 
+    this_thread::sleep_for(chrono::milliseconds(100)); 	
+}
+*/
 //----------------------------------------------------------------------------------------------------------------------------------------  
 
 OLED oled;
@@ -103,15 +113,7 @@ void PRINT_WAR()
     oled.InvertFont(0);
     this_thread::sleep_for(chrono::milliseconds(10)); 	
 }
-void PRINT_INFO()
-{
-    oled.ClearDisplay();
-    oled.Write_Text((0 + 15),(0 + 4),getSystemIPAddress());
-    oled.Write_Text((0 + 4),(16 + 4),"TEMP->");
-    oled.Write_Text((0 + 4 +50),(16 + 4),getCPUtemperature());   
-    oled.Update(); 
-    this_thread::sleep_for(chrono::milliseconds(100)); 	
-}
+
 int findOrder(std::string& mainString, const std::string& searchString) {
     size_t found = mainString.find(searchString);
     if (found != std::string::npos) {
@@ -151,7 +153,7 @@ void handleMessage(const char* message) {
       animasyon_start_flag = 1;
       animasyon_counter = 0;
       if(findOrder(strMessage,"(WAR)"))  animasyon = "WAR";   
-      else if(findOrder(strMessage,"(INFO)"))  animasyon = "INFO";   
+  //    else if(findOrder(strMessage,"(INFO)"))  animasyon = "INFO";   
     }  
     oled.Update();
 }
@@ -168,7 +170,7 @@ int main() {
       if(animasyon_start_flag) 
       {
         if(animasyon == "WAR") PRINT_WAR();
-        else if(animasyon == "INFO") PRINT_INFO();
+     //   else if(animasyon == "INFO") PRINT_INFO();
       }
       else sleep(1);
     }
