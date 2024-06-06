@@ -1,19 +1,93 @@
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
+#include <cstring>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <ctime>
+
 #include <thread>
 #include <chrono>
 #include "oled.cpp"
 #include "war.h"
 #include "server.cpp"
 using namespace std;
+
+//----------------------------------------------------------------------------------------------------------------------------------------FUNCTS
+
+string getSystemIPAddress() {
+    struct ifaddrs* ifAddrStruct = nullptr;
+    struct ifaddrs* ifa = nullptr;
+    void* tmpAddrPtr = nullptr;
+    string ipAddress;
+    if (getifaddrs(&ifAddrStruct) == -1) {
+        cerr << "Ağ arabirimleri alınamadı." << endl;
+        return ipAddress;
+    }
+    for (ifa = ifAddrStruct; ifa != nullptr; ifa = ifa->ifa_next) {
+        if (!ifa->ifa_addr) {
+            continue;
+        }
+        if (ifa->ifa_addr->sa_family == AF_INET) { // IPv4 adresi
+            tmpAddrPtr = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
+            char addressBuffer[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+            string interfaceName(ifa->ifa_name);
+            string address(addressBuffer);
+            
+            // localhost IP adresini atla
+            if (address != "127.0.0.1") {
+                ipAddress = address;
+                break;
+            }
+        }
+    }
+    if (ifAddrStruct != nullptr) {
+        freeifaddrs(ifAddrStruct);
+    }
+    return ipAddress;
+}
+string getCPUtemperature() {
+    ifstream file("/sys/class/thermal/thermal_zone0/temp");
+    if (!file) {
+        cerr << "İşlemci sıcaklık dosyası açılamadı." << endl;
+        return "";
+    }
+    string temperature;
+    getline(file, temperature);
+    file.close();
+    int tempValue = stoi(temperature);
+    float cpuTemp = tempValue / 1000.0;
+
+    return to_string(cpuTemp);
+}
+
+string GetCurrentDateTime()
+{
+    time_t currentTime = time(nullptr);
+    string dateTime = ctime(&currentTime);
+    dateTime.pop_back(); // Son karakter olan newline karakterini kaldır
+    dateTime = dateTime.substr(4); //Günü kaldırır
+    dateTime = dateTime.substr(0, dateTime.length() - 5); //yılı kaldırır.
+
+    return dateTime;
+}
+string getElapsedTimeInSeconds()
+{
+    static const auto startTime = chrono::steady_clock::now();
+    const auto currentTime = chrono::steady_clock::now();
+    const auto elapsedTime = chrono::duration_cast<chrono::seconds>(currentTime - startTime).count();
+    return to_string(elapsedTime);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------  
+
 OLED oled;
 int animasyon_start_flag = 0;
 int animasyon_counter = 0;
-int aniasyon_choose = 0;
-void INIT_oled()
-{
-  oled.INIT(128,32,0x3C);
-}
+string animasyon = 0;
 
 void PRINT_WAR()
 {
@@ -29,7 +103,15 @@ void PRINT_WAR()
     oled.InvertFont(0);
     this_thread::sleep_for(chrono::milliseconds(10)); 	
 }
-
+void PRINT_INFO()
+{
+    oled.ClearDisplay();
+    oled.Write_Text((0 + 15),(0 + 4),getSystemIPAddress());
+    oled.Write_Text((0 + 4),(16 + 4),"TEMP->");
+    oled.Write_Text((0 + 4 +50),(16 + 4),getCPUtemperature());   
+    oled.Update(); 
+    this_thread::sleep_for(chrono::milliseconds(100)); 	
+}
 int findOrder(std::string& mainString, const std::string& searchString) {
     size_t found = mainString.find(searchString);
     if (found != std::string::npos) {
@@ -68,8 +150,8 @@ void handleMessage(const char* message) {
     {
       animasyon_start_flag = 1;
       animasyon_counter = 0;
-      if(findOrder(strMessage,"(WAR)"))  aniasyon_choose = 0;
-     
+      if(findOrder(strMessage,"(WAR)"))  animasyon = "WAR";   
+      else if(findOrder(strMessage,"(INFO)"))  animasyon = "INFO";   
     }  
     oled.Update();
 }
@@ -79,14 +161,14 @@ void handleDisconnect() {
 }
 
 int main() {
-   INIT_oled();
+    oled.INIT(128,32,0x3C);
     TCPServer server(8082, handleMessage, handleDisconnect);
     while (true) 
     {
       if(animasyon_start_flag) 
       {
-        if(aniasyon_choose == 0) PRINT_WAR();
-        
+        if(animasyon == "WAR") PRINT_WAR();
+        else if(animasyon == "INFO") PRINT_INFO();
       }
       else sleep(1);
     }
