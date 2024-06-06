@@ -42,6 +42,7 @@ int findOrder(std::string& mainString, const std::string& searchString) {
 
 void handleMessage(const char* message) {
     std::string strMessage = std::string(message);
+    if(animasyon_start_flag=1) oled.ClearDisplay();
     animasyon_start_flag = 0;
     if(findOrder(strMessage,"(TEXT0)")) oled.ClearDisplay();
     else if(findOrder(strMessage,"(TEXT1)")) 
