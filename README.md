@@ -8,6 +8,4 @@ g++ -o oled main.cpp
 ./root/programs_oled_cpp/oled
 
 //---------------------------------------------------------------------------//
-
-
 sudo sed -i '$e echo "./root/programs_oled_cpp/oled &"' /etc/rc.local
