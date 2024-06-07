@@ -106,21 +106,3 @@ void TCPServer::checkDisconnect() {
     }
 }
 
-int main() {
-    auto messageHandler = [](const char* message) {
-        std::cout << "Received: " << message << std::endl;
-    };
-
-    auto onDisconnect = []() {
-        std::cout << "Client disconnected" << std::endl;
-    };
-
-    TCPServer server(8080, messageHandler, onDisconnect);
-
-    // Sunucunun bitmesini beklemek için ana thread'i engelle
-    while (true) {
-        sleep(1);
-    }
-
-    return 0;
-}
