@@ -86,4 +86,21 @@ void TCPServer::handleClient(int clientSocket) {
     char buffer[1024] = {0};
     while (true) {
         int valread = read(clientSocket, buffer, 1024);
-        if (valread == 0)
+        if (valread == 0) {
+            break;
+        } else if (valread < 0) {
+            perror("read");
+            exit(EXIT_FAILURE);
+        }
+        messageHandler(buffer);
+        for(int x=0;x<1024;x++) buffer[x] = 0;
+    }
+    --connectedClients;
+    checkDisconnect();
+}
+
+void TCPServer::checkDisconnect() {
+    if (connectedClients == 0) {
+        onDisconnect();
+    }
+}
