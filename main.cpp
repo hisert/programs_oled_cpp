@@ -110,7 +110,7 @@ void PRINT_WAR()
     }
     else animasyon_counter = 0;
     oled.InvertFont(0);
-    this_thread::sleep_for(chrono::milliseconds(10)); 	
+    this_thread::sleep_for(chrono::milliseconds(40)); 	
 }
 
 int findOrder(std::string& mainString, const std::string& searchString) {
