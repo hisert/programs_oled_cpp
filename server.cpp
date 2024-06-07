@@ -20,7 +20,6 @@ private:
     int server_fd;
     struct sockaddr_in address;
     int port;
-    char ip[INET_ADDRSTRLEN] = "127.0.0.1"; // IP adresini burada sabitliyoruz
     std::function<void(const char*)> messageHandler;
     std::function<void()> onDisconnect;
     int connectedClients;
@@ -41,7 +40,7 @@ TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, 
         exit(EXIT_FAILURE);
     }
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = inet_addr(ip);
+    address.sin_addr.s_addr = INADDR_ANY; // Tüm IP adreslerinde dinle
     address.sin_port = htons(port);
     if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
         perror("bind failed");
@@ -51,7 +50,7 @@ TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, 
         perror("listen");
         exit(EXIT_FAILURE);
     }
-    std::cout << "Oled Server listening on IP: " << ip << ", Port: " << port << std::endl;
+    std::cout << "Server listening on port: " << port << std::endl;
 
     // Thread'i başlat
     serverThread = std::thread(&TCPServer::run, this);
@@ -87,22 +86,4 @@ void TCPServer::handleClient(int clientSocket) {
     char buffer[1024] = {0};
     while (true) {
         int valread = read(clientSocket, buffer, 1024);
-        if (valread == 0) {
-            break;
-        } else if (valread < 0) {
-            perror("read");
-            exit(EXIT_FAILURE);
-        }
-        messageHandler(buffer);
-        for(int x=0;x<1024;x++) buffer[x] = 0;
-    }
-    --connectedClients;
-    checkDisconnect();
-}
-
-void TCPServer::checkDisconnect() {
-    if (connectedClients == 0) {
-        onDisconnect();
-    }
-}
-
+        if (valread == 0)
