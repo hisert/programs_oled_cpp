@@ -2,9 +2,6 @@
 #include <cstring>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <netdb.h>
-#include <ifaddrs.h>
-#include <cstdlib>
 #include <thread>
 #include <vector>
 #include <functional>
@@ -23,20 +20,15 @@ private:
     int server_fd;
     struct sockaddr_in address;
     int port;
-    char ip[INET_ADDRSTRLEN];
+    char ip[INET_ADDRSTRLEN] = "127.0.0.1"; // IP adresini burada sabitliyoruz
     std::function<void(const char*)> messageHandler;
     std::function<void()> onDisconnect;
     int connectedClients;
-    int getLocalIP();
     std::thread serverThread;
 };
 
-TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, std::function<void()> onDisconnect) 
+TCPServer::TCPServer(int port, std::function<void(const char*)> messageHandler, std::function<void()> onDisconnect)
     : port(port), messageHandler(messageHandler), onDisconnect(onDisconnect), connectedClients(0) {
-    if (getLocalIP() != 0) {
-        std::cerr << "Error getting local IP address" << std::endl;
-        exit(EXIT_FAILURE);
-    }
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd == 0) {
         perror("socket failed");
@@ -80,33 +72,6 @@ void TCPServer::run() {
     }
 }
 
-int TCPServer::getLocalIP() {
-    struct ifaddrs *ifaddr, *ifa;
-    int family, s;
-    if (getifaddrs(&ifaddr) == -1) {
-        perror("getifaddrs");
-        return -1;
-    }
-    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr == NULL)
-            continue;
-        family = ifa->ifa_addr->sa_family;
-        if (family == AF_INET) {
-            s = getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), ip, INET_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
-            if (s != 0) {
-                std::cerr << "getnameinfo() failed: " << gai_strerror(s) << std::endl;
-                return -1;
-            }
-            if (strcmp(ifa->ifa_name, "lo") != 0) {
-                freeifaddrs(ifaddr);
-                return 0;
-            }
-        }
-    }
-    freeifaddrs(ifaddr);
-    return -1;
-}
-
 int TCPServer::acceptConnection() {
     int addrlen = sizeof(address);
     int new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
@@ -141,3 +106,21 @@ void TCPServer::checkDisconnect() {
     }
 }
 
+int main() {
+    auto messageHandler = [](const char* message) {
+        std::cout << "Received: " << message << std::endl;
+    };
+
+    auto onDisconnect = []() {
+        std::cout << "Client disconnected" << std::endl;
+    };
+
+    TCPServer server(8080, messageHandler, onDisconnect);
+
+    // Sunucunun bitmesini beklemek için ana thread'i engelle
+    while (true) {
+        sleep(1);
+    }
+
+    return 0;
+}
