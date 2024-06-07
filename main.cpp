@@ -163,7 +163,7 @@ void handleDisconnect() {
 
 int main() {
     oled.INIT(128,32,0x3C);
-    handleMessage("(ANIME)(INFO)");
+    handleMessage("(ANIME)(WAR)");
     TCPServer server(8082, handleMessage, handleDisconnect);
     while (true) 
     {
